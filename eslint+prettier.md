@@ -36,6 +36,29 @@ export default [
 ];
 ```
 
+## eslint ignore in .eslint.config.js
+
+```javascript
+export default [
+  { files: ['**/*.{js,mjs,cjs,ts}'] },
+  { languageOptions: { globals: globals.browser } },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  prettier,
+  {
+    plugins: {
+      prettier: prettierPlugin,
+    },
+    rules: {
+      'prettier/prettier': 'error',
+    },
+  },
+  {
+    ignorePatterns: ['node_modules/', 'dist/', 'build/'],
+  },
+];
+```
+
 ## Create .prettierrc
 
 ```json
