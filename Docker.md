@@ -13,15 +13,25 @@ version: '3.8'
 
 services:
   web:
-    image: php:5.6-apache
+    image: webdevops/php-apache:5.6
     container_name: drupal7-web
     ports:
       - "8080:80"
     volumes:
-      - ./drupal:/var/www/html
+      - ./drupal:/app
       - ./php.ini:/usr/local/etc/php/php.ini
+    environment:
+      - WEB_DOCUMENT_ROOT=/app
+      - PHP_ENABLE_MODULE=gd,pdo_mysql
     depends_on:
       - db
+    command: >
+      bash -c "
+      a2enmod rewrite;
+      chown -R www-data:www-data /app/sites/default/files;
+      chmod -R 755 /app/sites/default/files;
+      /entrypoint supervisord
+      "
 
   db:
     image: mysql:5.7
@@ -34,6 +44,8 @@ services:
       MYSQL_PASSWORD: drupal
     ports:
       - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -44,6 +56,9 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  db_data:
 ```
 
 ```
@@ -113,6 +128,14 @@ docker-compose down -v
 ## Eliminar los contenedores y las imágenes
 ```bash
 docker-compose down --rmi all -v
+# Detén y elimina todos los contenedores
+docker-compose down --remove-orphans
+
+# Elimina contenedores huérfanos manualmente
+docker rm -f $(docker ps -aq --filter network=drupal7_default)
+
+# Luego elimina la red
+docker network rm drupal7_default
 ```
 ## Eliminar los contenedores y las imágenes sin eliminar los volúmenes
 ```bash
