@@ -9,8 +9,6 @@ drupal7-docker/
 ```
 
 ```yaml
-version: '3.8'
-
 services:
   web:
     image: webdevops/php-apache:5.6
@@ -20,6 +18,7 @@ services:
     volumes:
       - ./drupal:/app
       - ./php.ini:/usr/local/etc/php/php.ini
+      - ./tmp:/tmp  # Cambiado a volumen bind mount
     environment:
       - WEB_DOCUMENT_ROOT=/app
       - PHP_ENABLE_MODULE=gd,pdo_mysql
@@ -28,8 +27,12 @@ services:
     command: >
       bash -c "
       a2enmod rewrite;
+      mkdir -p /tmp;
+      mkdir -p /app/sites/default/files;
+      chown -R www-data:www-data /tmp;
+      chmod -R 777 /tmp;
       chown -R www-data:www-data /app/sites/default/files;
-      chmod -R 755 /app/sites/default/files;
+      chmod -R 777 /app/sites/default/files;
       /entrypoint supervisord
       "
 
@@ -140,4 +143,20 @@ docker network rm drupal7_default
 ## Eliminar los contenedores y las imágenes sin eliminar los volúmenes
 ```bash
 docker-compose down --rmi all
+```
+
+## Elimina los volúmenes antiguos (esto no afectará tu base de datos)
+```bash
+docker volume prune
+```
+
+## Entrar a la consola de un contenedor
+```bash
+docker exec -it drupal7-web bash
+```
+
+## Acceder a la base de datos desde el contenedor
+```bash
+docker exec -it drupal7-db bash
+mysql -u drupal -p
 ```
