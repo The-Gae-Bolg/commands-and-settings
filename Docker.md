@@ -18,7 +18,7 @@ services:
     volumes:
       - ./drupal:/app
       - ./php.ini:/usr/local/etc/php/php.ini
-      - ./tmp:/tmp  # Cambiado a volumen bind mount
+      - ./tmp:/tmp
     environment:
       - WEB_DOCUMENT_ROOT=/app
       - PHP_ENABLE_MODULE=gd,pdo_mysql
@@ -28,10 +28,13 @@ services:
       bash -c "
       a2enmod rewrite;
       mkdir -p /tmp;
+      mkdir -p /app/sites/all/translations;
       mkdir -p /app/sites/default/files;
       chown -R www-data:www-data /tmp;
       chmod -R 777 /tmp;
-      chown -R www-data:www-data /app/sites/default/files;
+      chown -R www-data:www-data /app/sites;
+      chmod -R 755 /app/sites;
+      chmod -R 777 /app/sites/all/translations;
       chmod -R 777 /app/sites/default/files;
       /entrypoint supervisord
       "

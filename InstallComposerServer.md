@@ -34,7 +34,7 @@ composer --version
 ## Create alias for php version and composer + php version
 
 ```bash
-alias php82='/opt/cpanel/ea-php82/root/usr/bin/php'
+alias php='/opt/cpanel/ea-php82/root/usr/bin/php'
 alias composer='/opt/cpanel/ea-php82/root/usr/bin/php /home/{userdir}/bin/composer'
 ```
 
